@@ -1,0 +1,29 @@
+{
+  "name": "lif-mgu-studieapp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Studieapp för LIF-auktorisation (läkemedelsinformatör) på MGU-nivå",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/api.test.mjs tests/practice.test.mjs",
+    "verify:content": "node verify-content.mjs",
+    "check": "npm run test && npm run verify:content && npm run build"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "undici": "^7.28.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "vite": "^8.1.5"
+  }
+}
