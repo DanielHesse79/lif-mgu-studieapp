@@ -4,6 +4,8 @@ import { useApp } from '../../context/AppContext.jsx'
 import { getModule, getTopic } from '../../data/modules'
 import { getQuestions } from '../../data/questions/index.js'
 import { shuffleOptions } from '../../lib/practice'
+import Icon from '../../components/Icon.jsx'
+import ScoreRing from '../../components/ScoreRing.jsx'
 
 const TEXT = { m1: 'text-m1', m2: 'text-m2', m3: 'text-m3' }
 const TEST_SIZE = 20
@@ -151,8 +153,8 @@ export default function Test() {
           ‹ {mod.title}
         </Link>
         <div className="card p-6 text-center sm:p-8">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-surface-2 text-3xl">
-            🎯
+          <div className={`mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-surface-2 ring-1 ring-border ${TEXT[mod.color]}`}>
+            <Icon name="target" className="h-8 w-8" />
           </div>
           <h1 className="mt-4 text-xl font-extrabold text-white">Övningsprov</h1>
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-400">
@@ -197,13 +199,23 @@ export default function Test() {
           ‹ {mod.title}
         </Link>
 
-        <div className="card p-6 text-center sm:p-8">
+        <div className="card flex flex-col items-center p-6 text-center sm:p-8">
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resultat</div>
-          <div className={`mt-2 text-5xl font-extrabold ${tone}`}>{pct}%</div>
-          <p className="mt-1 text-sm text-slate-300">
-            {result.correct} av {result.total} rätt · {verdict}
+          <div className="mt-4 animate-fade-in-scale">
+            <ScoreRing pct={pct} size={148} stroke={12} colorClass={tone}>
+              <div>
+                <div className={`text-4xl font-extrabold ${tone}`}>{pct}%</div>
+                <div className="text-[11px] text-slate-500">
+                  {result.correct}/{result.total} rätt
+                </div>
+              </div>
+            </ScoreRing>
+          </div>
+          <p className="mt-4 text-sm font-semibold text-slate-200">{verdict}</p>
+          <p className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-500">
+            <Icon name="clock" className="h-3.5 w-3.5" />
+            {fmtTime(result.timeMs)}
           </p>
-          <p className="mt-1 text-xs text-slate-500">Tid: {fmtTime(result.timeMs)}</p>
         </div>
 
         {/* Svaghetsprofil */}
@@ -273,8 +285,9 @@ export default function Test() {
           Fråga {idx + 1}/{items.length}
         </span>
         <div className="flex items-center gap-2 text-xs">
-          <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono tabular-nums text-slate-300">
-            ⏱ {fmtTime(elapsed)}
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono tabular-nums text-slate-300">
+            <Icon name="clock" className="h-3.5 w-3.5 text-slate-400" />
+            {fmtTime(elapsed)}
           </span>
           <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-slate-300">
             {answeredCount}/{items.length} besvarade

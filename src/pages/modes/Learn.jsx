@@ -5,6 +5,7 @@ import { getModule, lessonKey } from '../../data/modules'
 import { generateLesson, adjustLesson } from '../../lib/api'
 import { getStaticLesson } from '../../data/lessons/index.js'
 import RichText from '../../components/RichText.jsx'
+import Icon from '../../components/Icon.jsx'
 
 const LEVEL_LABEL = {
   grund: 'Grundnivå',
@@ -246,8 +247,9 @@ export default function Learn() {
         <Link to={`/modul/${mod.id}`} className="text-sm text-slate-400 hover:text-white">
           ‹ {mod.title}
         </Link>
-        <button onClick={() => setNavOpen((v) => !v)} className="btn-ghost px-3 py-1.5 text-xs lg:hidden">
-          {navOpen ? 'Stäng' : '☰ Lektioner'}
+        <button onClick={() => setNavOpen((v) => !v)} className="btn-ghost gap-1.5 px-3 py-1.5 text-xs lg:hidden">
+          <Icon name={navOpen ? 'close' : 'menu'} className="h-3.5 w-3.5" />
+          {navOpen ? 'Stäng' : 'Lektioner'}
         </button>
       </div>
 
@@ -344,7 +346,8 @@ export default function Learn() {
               {/* Nyckelbegrepp */}
               {content.keyTerms?.length > 0 && (
                 <section className="card mb-6 p-5">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                  <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    <Icon name="sparkles" className={`h-4 w-4 ${TEXT[mod.color]}`} />
                     Nyckelbegrepp
                   </h2>
                   <dl className="mt-3 space-y-3">
@@ -361,7 +364,8 @@ export default function Learn() {
               {/* Takeaways */}
               {content.takeaways?.length > 0 && (
                 <section className="card mb-6 border-accent/30 bg-accent/5 p-5">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-accent-soft">
+                  <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-accent-soft">
+                    <Icon name="bulb" className="h-4 w-4" />
                     Att minnas
                   </h2>
                   <ul className="mt-3 space-y-2">

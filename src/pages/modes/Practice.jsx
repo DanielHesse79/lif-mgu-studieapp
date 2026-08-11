@@ -10,6 +10,8 @@ import {
   DIFFICULTY_ORDER,
   DIFFICULTY_LABEL,
 } from '../../lib/practice'
+import Icon from '../../components/Icon.jsx'
+import ScoreRing from '../../components/ScoreRing.jsx'
 
 const TEXT = { m1: 'text-m1', m2: 'text-m2', m3: 'text-m3' }
 
@@ -159,16 +161,29 @@ export default function Practice() {
         <Link to={`/modul/${mod.id}`} className="mb-4 inline-block text-sm text-slate-400 hover:text-white">
           ‹ {mod.title}
         </Link>
-        <div className="card p-6 text-center sm:p-8">
+        <div className="card flex flex-col items-center p-6 text-center sm:p-8">
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             Pass {roundNo} klart
           </div>
-          <div className={`mt-2 text-5xl font-extrabold ${pct >= 70 ? 'text-emerald-400' : pct >= 40 ? 'text-amber-400' : 'text-rose-400'}`}>
-            {pct}%
+          <div className="mt-4 animate-fade-in-scale">
+            <ScoreRing
+              pct={pct}
+              size={140}
+              stroke={11}
+              colorClass={pct >= 70 ? 'text-emerald-400' : pct >= 40 ? 'text-amber-400' : 'text-rose-400'}
+            >
+              <div>
+                <div
+                  className={`text-4xl font-extrabold ${pct >= 70 ? 'text-emerald-400' : pct >= 40 ? 'text-amber-400' : 'text-rose-400'}`}
+                >
+                  {pct}%
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  {roundCorrect}/{roundSize} rätt
+                </div>
+              </div>
+            </ScoreRing>
           </div>
-          <p className="mt-1 text-sm text-slate-300">
-            {roundCorrect} av {roundSize} rätt
-          </p>
           <div className="mx-auto mt-5 max-w-xs space-y-1.5 text-sm text-slate-400">
             <div className="flex justify-between">
               <span>Nuvarande nivå</span>

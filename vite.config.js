@@ -66,6 +66,9 @@ export default defineConfig(({ mode }) => {
   // Load all env vars (including non-VITE_ ones) for the local API middleware.
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    // Relativa asset-sökvägar så bygget fungerar på GitHub Pages (underkatalog
+    // som /repo/) likaväl som på Vercel/rot.
+    base: './',
     plugins: [react(), localApiPlugin(env)],
     server: {
       port: 5173,

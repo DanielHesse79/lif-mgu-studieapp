@@ -2,17 +2,13 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { MODULES } from '../data/modules'
 import ProgressBar from '../components/ProgressBar.jsx'
+import ModuleGlyph from '../components/ModuleGlyph.jsx'
+import ScoreRing from '../components/ScoreRing.jsx'
+import Icon from '../components/Icon.jsx'
 
-const RING = {
-  m1: 'ring-m1/30',
-  m2: 'ring-m2/30',
-  m3: 'ring-m3/30',
-}
-const TEXT = {
-  m1: 'text-m1',
-  m2: 'text-m2',
-  m3: 'text-m3',
-}
+const RING = { m1: 'ring-m1/25', m2: 'ring-m2/25', m3: 'ring-m3/25' }
+const TEXT = { m1: 'text-m1', m2: 'text-m2', m3: 'text-m3' }
+const RING_COLOR = { m1: 'text-m1', m2: 'text-m2', m3: 'text-m3' }
 
 function ModuleCard({ mod }) {
   const { moduleCoverage, topicCoverage } = useApp()
@@ -21,18 +17,21 @@ function ModuleCard({ mod }) {
   return (
     <Link
       to={`/modul/${mod.id}`}
-      className={`card block p-5 transition hover:border-accent/50 ring-1 ${RING[mod.color]}`}
+      className={`card card-interactive block p-5 ring-1 ${RING[mod.color]}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
+      <div className="flex items-start gap-4">
+        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-surface-2 ring-1 ring-border">
+          <ModuleGlyph moduleId={mod.id} className="h-9 w-9" />
+        </span>
+        <div className="min-w-0 flex-1">
           <div className={`text-xs font-semibold uppercase tracking-wide ${TEXT[mod.color]}`}>
             Modul {mod.number}
           </div>
           <h3 className="mt-0.5 text-lg font-bold text-white">{mod.title}</h3>
           <p className="mt-0.5 text-sm text-slate-400">{mod.subtitle}</p>
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-extrabold text-white">{cov.pct}%</div>
+        <div className="shrink-0 text-right">
+          <div className="text-2xl font-extrabold text-gradient">{cov.pct}%</div>
           <div className="text-[11px] text-slate-500">
             {cov.read}/{cov.total} lektioner
           </div>
@@ -71,9 +70,8 @@ export default function Dashboard() {
   )
   const overallPct = totals.total ? Math.round((totals.read / totals.total) * 100) : 0
 
-  // Tidig svaghetsprofil: ämnesområden med lägst täckning (uppdateras med
-  // quizresultat (Öva). Övade ämnen rankas på låg träffsäkerhet och hamnar
-  // alltid före oövade, som rankas på låg lästäckning.
+  // Svaghetsprofil: övade ämnen rankas på låg träffsäkerhet och hamnar före
+  // oövade, som rankas på låg lästäckning.
   const focusAreas = MODULES.flatMap((m) =>
     m.topics.map((t) => {
       const cov = topicCoverage(m.id, t.id)
@@ -87,12 +85,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <section>
-        <h1 className="text-2xl font-extrabold tracking-tight text-white">Din studieöversikt</h1>
-        <p className="mt-1 text-sm text-slate-400">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-3xl border border-border bg-surface bg-hero-glow p-6 sm:p-7">
+        <div className="pointer-events-none absolute -right-8 -top-10 opacity-[0.12]">
+          <ModuleGlyph moduleId="m1" className="h-40 w-40 animate-float" />
+        </div>
+        <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+          Din studieöversikt
+        </h1>
+        <p className="mt-1.5 max-w-md text-sm text-slate-300">
           Förbered dig för LIF-auktorisationen, modul för modul.
         </p>
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
+        <p className="mt-3 max-w-xl text-xs leading-relaxed text-slate-500">
           Fristående studiehjälp, inte officiellt material från Lif eller Läkemedelsakademin.
           Använd aktuella MGU-läsanvisningar och kurslitteratur som huvudkälla.
         </p>
@@ -100,28 +104,31 @@ export default function Dashboard() {
 
       {/* Totalprogress + streak */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="card p-5 sm:col-span-2">
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Total täckning
-              </div>
-              <div className="mt-1 text-3xl font-extrabold text-white">{overallPct}%</div>
+        <div className="card flex items-center gap-5 p-5 sm:col-span-2">
+          <ScoreRing pct={overallPct} size={96} stroke={9} colorClass="text-accent-soft">
+            <span className="text-xl font-extrabold text-white">{overallPct}%</span>
+          </ScoreRing>
+          <div className="min-w-0">
+            <span className="chip">
+              <Icon name="chart" className="h-3.5 w-3.5 text-accent-soft" />
+              Total täckning
+            </span>
+            <div className="mt-2 text-2xl font-extrabold text-white">
+              {totals.read}
+              <span className="text-slate-500"> / {totals.total}</span>
             </div>
-            <div className="text-right text-sm text-slate-400">
-              {totals.read} av {totals.total} lektioner lästa
-            </div>
+            <div className="text-xs text-slate-400">lektioner lästa</div>
           </div>
-          <ProgressBar pct={overallPct} color="accent" className="mt-4" />
         </div>
 
         <div className="card flex flex-col justify-center p-5">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Streak</div>
-          <div className="mt-1 flex items-baseline gap-2">
+          <span className="chip w-fit">
+            <Icon name="flame" className="h-3.5 w-3.5 text-orange-400" />
+            Streak
+          </span>
+          <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-3xl font-extrabold text-orange-300">{streakDisplay}</span>
-            <span className="text-sm text-slate-400">
-              {streakDisplay === 1 ? 'dag' : 'dagar'} 🔥
-            </span>
+            <span className="text-sm text-slate-400">{streakDisplay === 1 ? 'dag' : 'dagar'}</span>
           </div>
           <div className="mt-1 text-[11px] text-slate-500">Rekord: {longestStreak} dagar</div>
         </div>
@@ -129,7 +136,10 @@ export default function Dashboard() {
 
       {/* Moduler */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Moduler</h2>
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <Icon name="layers" className="h-4 w-4" />
+          Moduler
+        </h2>
         {MODULES.map((mod) => (
           <ModuleCard key={mod.id} mod={mod} />
         ))}
@@ -137,7 +147,8 @@ export default function Dashboard() {
 
       {/* Fokusförslag / svaghetsprofil */}
       <section className="card p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <Icon name="sparkles" className="h-4 w-4 text-accent-soft" />
           Fokusförslag
         </h2>
         <p className="mt-1 text-xs text-slate-500">
@@ -148,28 +159,37 @@ export default function Dashboard() {
             <Link
               key={`${module.id}-${topic.id}`}
               to={`/modul/${module.id}/lar?amne=${topic.id}`}
-              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm transition hover:border-accent/50"
+              className="group flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm transition hover:border-accent/50 hover:bg-surface-3"
             >
-              <div className="min-w-0">
-                <div className="truncate font-medium text-slate-200">{topic.title}</div>
-                <div className="text-[11px] text-slate-500">
-                  Modul {module.number} · {module.title}
+              <div className="flex min-w-0 items-center gap-3">
+                <span className={`h-8 w-1 shrink-0 rounded-full ${RING_COLOR[module.color]} bg-current`} />
+                <div className="min-w-0">
+                  <div className="truncate font-medium text-slate-200">{topic.title}</div>
+                  <div className="text-[11px] text-slate-500">
+                    Modul {module.number} · {module.title}
+                  </div>
                 </div>
               </div>
-              <span className="shrink-0 text-right text-xs font-semibold tabular-nums text-slate-400">
-                {acc.pct != null ? (
-                  <>
-                    {acc.pct}% rätt
-                    <span className="block text-[10px] font-normal text-slate-500">
-                      {acc.seen} svar
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    {cov.pct}% läst
-                    <span className="block text-[10px] font-normal text-slate-500">ej övat</span>
-                  </>
-                )}
+              <span className="flex shrink-0 items-center gap-2 text-right text-xs font-semibold tabular-nums text-slate-400">
+                <span>
+                  {acc.pct != null ? (
+                    <>
+                      {acc.pct}% rätt
+                      <span className="block text-[10px] font-normal text-slate-500">
+                        {acc.seen} svar
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {cov.pct}% läst
+                      <span className="block text-[10px] font-normal text-slate-500">ej övat</span>
+                    </>
+                  )}
+                </span>
+                <Icon
+                  name="chevronRight"
+                  className="h-4 w-4 text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-slate-400"
+                />
               </span>
             </Link>
           ))}
