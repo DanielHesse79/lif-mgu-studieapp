@@ -27,7 +27,10 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-bg/80 backdrop-blur-xl">
+      <header
+        className="sticky top-0 z-20 border-b border-border/70 bg-bg/80 backdrop-blur-xl"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="group flex items-center gap-2.5">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent/25 to-accent/5 text-accent-soft ring-1 ring-accent/30 transition group-hover:ring-accent/50">

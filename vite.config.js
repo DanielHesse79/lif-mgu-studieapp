@@ -1,5 +1,52 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+
+/**
+ * PWA: gör appen installerbar ("Lägg till på hemskärmen") och läsbar offline.
+ * Allt innehåll (lektioner, frågor) ligger i JS-bundlen, så när service workern
+ * har cachat bygget fungerar plugg och övning utan nät. /api/claude (AI-delen)
+ * cachas aldrig och kräver nät.
+ */
+const pwa = VitePWA({
+  registerType: 'autoUpdate',
+  injectRegister: 'auto',
+  includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+  manifest: {
+    name: 'LIF MGU – Studieapp',
+    short_name: 'LIF MGU',
+    description: 'Studieapp för LIF-auktorisation (läkemedelsinformatör) på MGU-nivå',
+    lang: 'sv',
+    start_url: './',
+    scope: './',
+    display: 'standalone',
+    background_color: '#080b12',
+    theme_color: '#080b12',
+    icons: [
+      { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
+      { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+      { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  },
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+    navigateFallback: 'index.html',
+    navigateFallbackDenylist: [/^\/api\//],
+    cleanupOutdatedCaches: true,
+    runtimeCaching: [
+      {
+        // Google Fonts: CSS + typsnittsfiler, så Inter finns även offline.
+        urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'google-fonts',
+          expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+          cacheableResponse: { statuses: [0, 200] },
+        },
+      },
+    ],
+  },
+})
 
 /**
  * Local API plugin.
@@ -69,7 +116,7 @@ export default defineConfig(({ mode }) => {
     // Relativa asset-sökvägar så bygget fungerar på GitHub Pages (underkatalog
     // som /repo/) likaväl som på Vercel/rot.
     base: './',
-    plugins: [react(), localApiPlugin(env)],
+    plugins: [react(), localApiPlugin(env), pwa],
     server: {
       port: 5173,
     },

@@ -51,6 +51,20 @@ Endpointen har storleksgränser och en enkel, instanslokal hastighetsbegränsnin
 För en publik eller större driftsättning bör autentisering och en distribuerad kvot
 läggas till via driftplattformen eller en extern rate-limit-tjänst.
 
+## Installera som app på mobilen (PWA)
+
+Appen är en PWA (via `vite-plugin-pwa`) och kan installeras utan App Store:
+
+- **iPhone:** öppna sidan i Safari → Dela → *Lägg till på hemskärmen*.
+- **Android:** öppna i Chrome → menyn → *Installera app*.
+
+Efter första besöket fungerar lektioner, övning och övningsprov offline
+(allt innehåll ligger i bygget och cachas av service workern). AI-funktionerna
+(`/api/claude`) kräver nät och fungerar bara där API:t körs, alltså på Vercel,
+inte på GitHub Pages. Nya versioner hämtas automatiskt nästa gång appen öppnas
+med nät. Framsteg sparas i `localStorage` på enheten; på iPhone har den
+installerade appen sin egen lagring, skild från Safari.
+
 ## Projektstruktur
 
 ```
